@@ -1,0 +1,13 @@
+**/test_best_q.eval
+**/test_best_q
+**/test_worst_q
+**/test_worst_q.eval
+**/clarification_need_run1
+**/run1_multi
+**/run1_single
+**/run1.eval
+**/run1_multi.eval
+**/run1_single.eval
+**/.idea
+**/single_turn_test_eval.pkl
+**/test_with_labels.tsv
