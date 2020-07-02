@@ -55,8 +55,9 @@ In the `train.tsv` and `dev.tsv` files, you will find these fields:
 
 Below, you can find a few example rows of `train.tsv`:
 
+
 topic\_id | query | topic\_desc | clarification\_need | facet\_id | facet\_desc | question\_id | question | answer 
----------|---------|--------------|----------------------------|-------|-----------|--------|-----|--------|--------|--------
+---------|---------|--------------|----------------------------|-------|-----------|--------|-----|---
 14	 | I'm interested in dinosaurs |	I want to find information about and pictures of dinosaurs. | 	4 | 	F0159	| Go to the Discovery Channel's dinosaur site, which has pictures of dinosaurs and games. | 	Q00173 | 	are you interested in coloring books | 	no i just want to find the discovery channels website
 14	| I'm interested in dinosaurs | 	I want to find information about and pictures of dinosaurs.	| 4 | F0159	| Go to the Discovery Channel's dinosaur site, which has pictures of dinosaurs and games. | 	Q03021	| which dinosaurs are you interested in | 	im not asking for that i just want to go to the discovery channel dinosaur page
 
