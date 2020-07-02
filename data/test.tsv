@@ -1,4 +1,4 @@
-topic_id	query
+topic_id	initial request
 201	I would like to know more about raspberry pi
 202	Give me information on uss carl vinson.
 204	What is most importan rule of golf
@@ -37,7 +37,7 @@ topic_id	query
 265	What were the worst tornadoes in the USA?
 267	What are the lyrics to feliz navidad?
 268	What are the benefits of running?
-269	Find information about marshall county schools. 
+269	Find information about marshall county schools.
 270	I'm interested in sun tzu
 271	Tell me about halloween activities for middle school
 272	How can I interpret my dreams
