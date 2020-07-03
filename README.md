@@ -5,7 +5,7 @@
 ## Task Description
 
 ## ClariQ Dataset
-We have extended the [Qulac](https://github.com/aliannejadi/qulac)[^1] dataset and base the competition mostly on the training data that [Qulac](https://github.com/aliannejadi/qulac) provides. In addition, we have added some new topics, questions, and answers in the training set. The test set is completely unseen and newly collected. 
+We have extended the [Qulac](https://github.com/aliannejadi/qulac) [[1]](#ref1) dataset and base the competition mostly on the training data that [Qulac](https://github.com/aliannejadi/qulac) provides. In addition, we have added some new topics, questions, and answers in the training set. The test set is completely unseen and newly collected. 
 As such below, we provide a short summary of the data characteristics, both for the training and test set:
 
 ### ClariQ Train
@@ -85,7 +85,7 @@ Q02320	| what kind of pictures are you looking for
 `single_turn_train_eval.pkl` is a `dict` of pre-computed document relevance results after asking each question.  The document relevance performance is calculated as follows:
 
 * For a facet, the selected question and its corresponding answer are added to the document retrieval system.
-* The document retrieval model[^1], then re-ranks the documents with the given question and answer.
+* The document retrieval model [[1]](#ref1) , then re-ranks the documents with the given question and answer.
 * The performance of the newly-ranked document is then computed as follows. For every given facet, the effect of asking the question can be determined using the pre-computed `dict`. Below we see the structure of the `dict`:
 	
 		{ <evaluation_metric>: 
@@ -152,7 +152,7 @@ Notice that this `dict` contains the following evaluation metrics:
 ### `top10k_docs_dict.pkl.tar.gz`
 `top10k_docs_dict.pkl.tar.gz` is a `dict` consisting of a `list` of document ID's for a given `topic_id`. In case one plans to use the contents of a document in their model, and does not have access to ClueWeb09 or ClueWeb12 data collections, this `dict` is useful for having the list of top 10,000 documents as an initial ranking. The participants can use this list for two purposes:
 
-* To get access to the full text of the documents listed in this `dict`. For this, we suggest using the [ChatNoir](http://chatnoir.eu)'s API[^2]. Upon request, we provide the participants with an API key, using which they can get access by providing a document's ID. Sample codes will be added soon.
+* To get access to the full text of the documents listed in this `dict`. For this, we suggest using the [ChatNoir](http://chatnoir.eu)'s API [[2]](#ref2) . Upon request, we provide the participants with an API key, using which they can get access by providing a document's ID. Sample codes will be added soon.
 **Note**: The ClueWeb document ID should be translated into a UUID used by [ChatNoir](http://chatnoir.eu). ChatNoir provides a simple JavaScript for this purpose: [https://github.com/chatnoir-eu/webis-uuid](https://github.com/chatnoir-eu/webis-uuid).
 More information on how to use `ChatNoir`'s API: [https://www.chatnoir.eu/doc/api/#retrieving-full-documents](https://www.chatnoir.eu/doc/api/#retrieving-full-documents)
 * Get a pre-build index to re-run document retrieval. We advise the participants to contact us if they require access to pre-build index files to re-run document retrieval. We recommend viewing the `QL.py` in [Qulac](https://github.com/aliannejadi/qulac)'s repository for more information on how the pre-build index files could be used. 
@@ -237,13 +237,13 @@ Each run consists of two separate files:
 Below we explain how each file should be formatted.
 
 ### Question ranking
-This file is supposed to contain a ranked list of questions per topic. The number of questions per topic could be any number but evaluate only the top 30 questions. We follow the traditional TREC run format. Each line of the file should be formatted as follows:
+This file is supposed to contain a ranked list of questions per topic. The number of questions per topic could be any number, but we evaluate only the top 30 questions. We follow the traditional TREC run format. Each line of the file should be formatted as follows:
 
     <topic_id> 0 <question_id> <ranking> <relevance_score> <run_id>
 
 Each line represents a relevance prediction. `<relevance_score>` is the relevance score that a model predicts for a given `<topic_id>` and `<question_id>`. `<run_id>` is a string indicating the ID of the submitted run. `<ranking>` denotes the ranking of the `<question_id>` for `<topic_id>`. Practically, the ranking is computed by sorting the questions for each topic by their relevance scores.
 Here are some example lines:
-	
+
 	170 0 Q00380 1 6.53252 sample_run
 	170 0 Q02669 2 6.42323 sample_run
 	170 0 Q03333 3 6.34980 sample_run
@@ -276,5 +276,5 @@ Thanks to the crowd workers for their invaluable help in annotating ClariQ.
 
 ## References
 
-[^1]: "Asking Clarifying Questions in Open-Domain Information-Seeking Conversations", M. Aliannejadi, H. Zamani, F. Crestani, and W. B. Croft, International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR), Paris, France, 2019
-[^2]: "Elastic ChatNoir: Search Engine for the ClueWeb and the Common Crawl", J. Bevendorff, B. Stein,  M. Hagen, Martin Potthast, Advances in Information Retrieval. 40th European Conference on IR Research (ECIR 2018), Grenoble, France
+- <a name="ref1">[1]</a>: "Asking Clarifying Questions in Open-Domain Information-Seeking Conversations", M. Aliannejadi, H. Zamani, F. Crestani, and W. B. Croft, International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR), Paris, France, 2019
+- <a name="ref2">[2]</a>: "Elastic ChatNoir: Search Engine for the ClueWeb and the Common Crawl", J. Bevendorff, B. Stein,  M. Hagen, Martin Potthast, Advances in Information Retrieval. 40th European Conference on IR Research (ECIR 2018), Grenoble, France
