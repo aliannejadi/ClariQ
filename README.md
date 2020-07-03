@@ -5,7 +5,7 @@
 ## Task Description
 
 ## ClariQ Dataset
-We have extended the [Qulac](https://github.com/aliannejadi/qulac) [1] dataset and base the competition mostly on the training data that [Qulac](https://github.com/aliannejadi/qulac) provides. In addition, we have added some new topics, questions, and answers in the training set. The test set is completely unseen and newly collected. 
+We have extended the [Qulac](https://github.com/aliannejadi/qulac)[^1] dataset and base the competition mostly on the training data that [Qulac](https://github.com/aliannejadi/qulac) provides. In addition, we have added some new topics, questions, and answers in the training set. The test set is completely unseen and newly collected. 
 As such below, we provide a short summary of the data characteristics, both for the training and test set:
 
 ### ClariQ Train
@@ -27,24 +27,24 @@ Below, we provide a brief overview of the structure of the data, as well as a gu
 ## Files
 Below we list the files in the repository:
 
-* `./data/train.tsv` and `./data/dev.tsv` are TSV files consisting of topics (queries), facets, questions, answers, clarification need labels,
-* `./data/test.tsv` is a TSV file consisting test topic ID's, as well as queries.
+* `./data/train.tsv` and `./data/dev.tsv` are TSV files consisting of topics (queries), facets, clarifying questions, user's answers, and labels for how much clarification is needed (`clarification needs`).
+* `./data/test.tsv` is a TSV file consisting of test topic ID's, as well as queries (text).
 * `./data/question_bank.tsv` is a TSV file containing all the questions in the collection, as well as their ID's. Participants' models should select questions from this file.
 * `./data/top10k_docs_dict.pkl.tar.gz` is a `dict` containing the top 10,000 document ID's retrieved from ClueWeb09 and ClueWeb12 collections for each topic. This may be used by the participants who wish to leverage documents content in their models. 
 * `./data/single_turn_train_eval.pkl` is a `dict` containing the performance of each topic after asking a question and getting the answer. The evaluation tool that we provide uses this file to evaluate the selected questions.
 * `./src/clariq_eval_tool.py` is a python script to evaluate the runs. The participants may use this tool to evaluate their models on the `dev` set. We would use the same tool to evaluate the submitted runs on the `test` set.
-* `./sample_runs/` contains some sample runs and baselines. Among them, we have included the two oracle models `BestQuestion` and `WorstQuestion`, as well as the model choosing no question (`NoQuestion`). Participants may check these files as sample run files. Also, they could test the evaluation tool using these files.
+* `./sample_runs/` contains some sample runs and baselines. Among them, we have included the two oracle models `BestQuestion` and `WorstQuestion`, as well as `NoQuestion`, the model choosing no question. Participants may check these files as sample run files. Also, they could test the evaluation tool using these files.
 
 ## File Format
 
 ### `train.tsv`, `dev.tsv`:
 
-`train.tsv` and `dev.tsv` have the same format. They contain the topics, facets, questions, answers, and clarification need labels. These are considered to be the main files, containing the labels of the training set. Note that the `clarification needs` labels are already explicitly included in the files. Regarding the `question relevance` labels to each topic, these labels can be extracted implicitly from these files. In fact, each row only contains the questions that are considered to be relevant to a topic. Therefore, any other question is deemed irrelevant while computing Recall@k. 
+`train.tsv` and `dev.tsv` have the same format. They contain the topics, facets, questions, answers, and clarification need labels. These are considered to be the main files, containing the labels of the training set. Note that the `clarification needs` labels are already explicitly included in the files. Regarding the `question relevance` labels for each topic, these labels can be extracted inderictly: each row only contains the questions that are considered to be relevant to a topic. Therefore, any other question is deemed irrelevant while computing `Recall@k`. 
 In the `train.tsv` and `dev.tsv` files, you will find these fields:
 
 
-* `topic_id`: the ID of the topic.
-* `query`: the query that initiates the conversation.
+* `topic_id`: the ID of the topic (query).
+* `query`: the query (text) that initiates the conversation.
 * `topic_desc`: a full description of the topic as it appears in the TREC Web Track data.
 * `clarification_need`: a label from 1 to 4, indicating how much it is needed to clarify a topic. If a query is self-contained and would not need any clarification, the label would be 1. While if a query is absolutely ambiguous, making it impossible for a search engine to guess the user's right intent before clarification, the label would be 4.
 * `facet_id`: the ID of the facet.
@@ -79,17 +79,15 @@ Q02318 |	what kind of medium do you want this information to be in
 Q02319	 | what kind of penguin are you looking for
 Q02320	| what kind of pictures are you looking for
 
-**Note:** Question id `Q00001` is reserved for cases when a model predicts that asking clarifying questions is not required. Therefore, selecting `Q00001` results in selecting no question and reporting the original `query` performance.
+**Note:** Question id `Q00001` is reserved for cases when a model predicts that asking clarifying questions is not required. Therefore, selecting `Q00001` means selecting no question.
 
 ### `single_turn_train_eval.pkl`
-`single_turn_train_eval.pkl` is a `dict` of document relevance results after asking each question. 
-The document relevance performance is calculated as follows:
+`single_turn_train_eval.pkl` is a `dict` of pre-computed document relevance results after asking each question.  The document relevance performance is calculated as follows:
 
 * For a facet, the selected question and its corresponding answer are added to the document retrieval system.
-* The document retrieval model [1], then re-ranks the documents with the given question and answer.
-* The performance of the newly-ranked document is then computed 
-For every given facet, the effect of asking the question can be determined using this `dict`. Below we see the structure of the `dict`:
-		
+* The document retrieval model[^1], then re-ranks the documents with the given question and answer.
+* The performance of the newly-ranked document is then computed as follows. For every given facet, the effect of asking the question can be determined using the pre-computed `dict`. Below we see the structure of the `dict`:
+	
 		{ <evaluation_metric>: 
 			[ 
 			  <facet_id>: 
@@ -115,6 +113,7 @@ For every given facet, the effect of asking the question can be determined using
 		  ...
 		}	
 	
+
 As we see, one has first to identify the `evaluation_metric` they are interested in, followed by a `facet_id` and `question_id`. Notice that here we report the retrieval performance for both with and without considering the answer to the question. Furthermore, we also include two other values, namely, `MAX` and `MIN`. These refer to the maximum and minimum performance that the retrieval model achieves by asking the "best" and "worst" questions among the candidate questions. Below we see a sample of the data:
 
 	{ 'NDCG20: 
@@ -141,7 +140,7 @@ As we see, one has first to identify the `evaluation_metric` they are interested
 	  ]
 	  ...
 	}
-	
+
 Notice that this `dict` contains the following evaluation metrics: 
 
 * nDCG@{1, 3, 5, 10, 20}
@@ -153,15 +152,15 @@ Notice that this `dict` contains the following evaluation metrics:
 ### `top10k_docs_dict.pkl.tar.gz`
 `top10k_docs_dict.pkl.tar.gz` is a `dict` consisting of a `list` of document ID's for a given `topic_id`. In case one plans to use the contents of a document in their model, and does not have access to ClueWeb09 or ClueWeb12 data collections, this `dict` is useful for having the list of top 10,000 documents as an initial ranking. The participants can use this list for two purposes:
 
-* To get access to the full text of the documents listed in this `dict`. For this, we suggest using the [ChatNoir](http://chatnoir.eu)'s API [2]. Upon request, we provide the participants with an API key, using which they can get access by providing a document's ID. Sample codes will be added soon.
-**Note**: The ClueWeb document ID should be translated into a UUID used by [ChatNoir](http://chatnoir.eu). ChatNoir provides a simple Java script for this purpose: [https://github.com/chatnoir-eu/webis-uuid](https://github.com/chatnoir-eu/webis-uuid).
+* To get access to the full text of the documents listed in this `dict`. For this, we suggest using the [ChatNoir](http://chatnoir.eu)'s API[^2]. Upon request, we provide the participants with an API key, using which they can get access by providing a document's ID. Sample codes will be added soon.
+**Note**: The ClueWeb document ID should be translated into a UUID used by [ChatNoir](http://chatnoir.eu). ChatNoir provides a simple JavaScript for this purpose: [https://github.com/chatnoir-eu/webis-uuid](https://github.com/chatnoir-eu/webis-uuid).
 More information on how to use `ChatNoir`'s API: [https://www.chatnoir.eu/doc/api/#retrieving-full-documents](https://www.chatnoir.eu/doc/api/#retrieving-full-documents)
 * Get a pre-build index to re-run document retrieval. We advise the participants to contact us if they require access to pre-build index files to re-run document retrieval. We recommend viewing the `QL.py` in [Qulac](https://github.com/aliannejadi/qulac)'s repository for more information on how the pre-build index files could be used. 
 
 ## ClariQ Evaluation Script
 We provide an evaluation script, called `clariq_eval_tool.py` to evaluate submitted runs. We strongly recommend participants to evaluate their models on the `dev` set using this script before submitting their runs. `clariq_eval_tool.py` can be used to evaluate three subtasks:
 
-* **Predicting clarification need:** A submitted run would be evaluated against the true labels. Precision, recall, and F1-measure would be reported.
+* **Predicting clarification need:** A submitted run would be evaluated against the gold labels. Precision, recall, and F1-measure would be reported.
 * **Question relevance:** Recall@k would be reported for this task. Among the top k results, we would measure the model's performance in terms of retrieving the maximum number of relevant questions to a topic. Relevant questions are listed in `train.tsv` and `dev.tsv` for each topic.
 * **Document relevance:** As mentioned earlier, we also evaluate the quality of the predictions in terms of how they affect document retrieval performance. To evaluate this, we select the top-ranked question and measure how much it would affect the performance of document retrieval after being asked and answered. The performance would be reported in P@k, nDCG@k, and MRR@100.
 
@@ -191,7 +190,7 @@ And here is the full description if one passes `-h` argument:
 As the description above is self-contained in most cases, we only add some additional remarks below:
 
 * `--data_dir` should point to the directory where all the contents of the `data` directory are stored.
-* `--run_file` is the full path to the run file.
+* `--run_file` is the full path to the run file (see notes on the format below).
 * `--out_file` is the full path to the file where detailed evaluation results (per facet) will be stored. If not specified, the output will be stored. 
 
 Below, we give some examples of how to use the script and what to expect as output:
@@ -245,7 +244,7 @@ Here are some example lines:
 	171 0 Q03775 1 4.32344 sample_run
 	171 0 Q00934 2 3.98838 sample_run
 	171 0 Q01138 3 2.34534 sample_run
-	
+
 This run file will be used to evaluate both question relevance and document relevance. Sample runs can found in `./sample_runs/` directory.
 
 ### Clarification need
@@ -271,5 +270,5 @@ Thanks to the crowd workers for their invaluable help in annotating ClariQ.
 
 ## References
 
-1. "Asking Clarifying Questions in Open-Domain Information-Seeking Conversations", M. Aliannejadi, H. Zamani, F. Crestani, and W. B. Croft, International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR), Paris, France, 2019
-2. "Elastic ChatNoir: Search Engine for the ClueWeb and the Common Crawl", J. Bevendorff, B. Stein,  M. Hagen, Martin Potthast, Advances in Information Retrieval. 40th European Conference on IR Research (ECIR 2018), Grenoble, France
+[^1]: "Asking Clarifying Questions in Open-Domain Information-Seeking Conversations", M. Aliannejadi, H. Zamani, F. Crestani, and W. B. Croft, International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR), Paris, France, 2019
+[^2]: "Elastic ChatNoir: Search Engine for the ClueWeb and the Common Crawl", J. Bevendorff, B. Stein,  M. Hagen, Martin Potthast, Advances in Information Retrieval. 40th European Conference on IR Research (ECIR 2018), Grenoble, France
