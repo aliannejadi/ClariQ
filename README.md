@@ -193,6 +193,12 @@ As the description above is self-contained in most cases, we only add some addit
 * `--run_file` is the full path to the run file (see notes on the format below).
 * `--out_file` is the full path to the file where detailed evaluation results (per facet) will be stored. If not specified, the output will be stored. 
 
+### Requirements
+- pandas 
+- sklearn
+
+### Examples
+
 Below, we give some examples of how to use the script and what to expect as output:
 
 	python ./src/clariq_eval_tool.py --eval_task document_relevance --data_dir ./data/ --run_file ./sample_runs/dev_best_q --out_file ./sample_runs/dev_best_q.eval
