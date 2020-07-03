@@ -76,7 +76,7 @@ def get_eval_topic_file_paths(data_dir, experiment_type):
     else:
         eval_file_path = path.join(data_dir, 'single_turn_test_eval.pkl')
         topic_file_path = path.join(data_dir, 'test_with_labels.tsv')
-        raise FileNotFoundError  # TODO: remove when test eval released.
+        # raise FileNotFoundError  # TODO: remove when test eval released.
     return eval_file_path, topic_file_path
 
 
