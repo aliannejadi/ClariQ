@@ -66,6 +66,7 @@ def get_selected_question(facet_id, facet_to_topic_dict, multi_turn, run_dict):
         selected_q = run_dict[facet_id]
     else:
         selected_q = run_dict[facet_to_topic_dict[facet_id]]
+    selected_q = 'MIN' if selected_q == 'MAX' else selected_q # to avoid submitting MAX results.
     return selected_q
 
 
