@@ -11,3 +11,5 @@
 **/.idea
 **/single_turn_test_eval.pkl
 **/test_with_labels.tsv
+**/test_bm25
+**/test_bm25.eval
