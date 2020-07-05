@@ -2,26 +2,102 @@
 
 ## Introduction
 
-## Task Description
+The challenge is organized as part of the Search-oriented Conversational AI (SCAI) EMNLP
+workshop in 2020. The main aim of the conversational systems is to return
+an appropriate answer in response to the user requests. However, some user
+requests might be ambiguous. In Information Retrieval (IR) settings such a situation is handled mainly
+through the diversification of search result page. It is however much more challenging in dialogue settings. 
+Hence, we aim to study the following situation for dialogue settings:
+
+* a user is asking an ambiguous question (where ambiguous question is a
+question to which one can return > 1 possible answers);
+* the system must identify that the question is ambiguous, and, instead of
+trying to answer it directly, ask a good clarifying question.
+
+The main research questions we aim to answer as part of the challenge are
+the following:
+
+* RQ1: When to ask clarifying questions during dialogues?
+* RQ2: How to generate the clarifying questions?
+
+## Challenge Design
+
+The ClariQ challenge is run in two stages. At Stage 1 (described below)
+participants are provided a static dataset consisting mainly of an initial user
+request, clarifying question and user answer, which is suitable for initial training,
+validating and testing. At Stage 2, we bring a human
+in the loop. Namely, the TOP-N systems, resulted from Stage 1, are exposed
+to the real users.
+
+### Stage 1: initial dataset
+
+Taking inspiration from [Qulac](https://github.com/aliannejadi/qulac) [[1]](#ref1) dataset,
+ we have crowdsourced a new dataset to study clarifying questions that is suitable for conversational settings. 
+Namely, the collected dataset consists of:
+
+* **User Request:** an initial user request in the conversational form, e.g.,
+"What is Fickle Creek Farm?", with a label reflects if clarification is needed
+ranged from 1 to 4;
+* **Clarification questions:** a set of possible clarifying questions, e.g., "Do
+you want to know the location of fickle creek farm?";
+* **User Answers:** each questions is supplied with a user answer, e.g., "No, I
+want to find out where can i purchase fickle creek farm products."
+
+For training, the collected dataset is split into training (187 topics) and validation
+(50 topics) sets. For testing, the participants are supplied with: (1) a set of user
+requests in conversational form and (2) a set a set of questions (i.e., question
+bank) which contains all the questions that we have collected for the collection.
+Therefore to answer our research questions, we suggest the following
+two tasks:
+
+* To answer RQ1: Given a user request, return a score [1 −4] indicating the
+necessity of asking clarifying questions.
+* To answer RQ2: Given a user request which needs clarification, return the
+most suitable clarifying question. Here participants are able to choose: (1)
+either select the clarifying question from the provided question bank (all
+clarifying questions we collected), aiming to maximize the precision, (2) or
+choose not to ask any question (by choosing `Q0001` from the question bank.)
+
+### Stage 2: human-in-the-loop
+To be announced.
 
 ## ClariQ Dataset
-We have extended the [Qulac](https://github.com/aliannejadi/qulac) [[1]](#ref1) dataset and base the competition mostly on the training data that [Qulac](https://github.com/aliannejadi/qulac) provides. In addition, we have added some new topics, questions, and answers in the training set. The test set is completely unseen and newly collected. 
+We have extended the [Qulac](https://github.com/aliannejadi/qulac) [[1]](#ref1) dataset and base the competition mostly
+ on the training data that [Qulac](https://github.com/aliannejadi/qulac) provides. 
+ In addition, we have added some new topics, questions, and answers in the training set. 
+ The test set is completely unseen and newly collected. 
+ Like Qulac, ClariQ consists of single-turn conversations (`initial_request`, followed by clarifying `question` and `answer`).
+ In addition, it comes with synthetic multi-turn conversations (up to three turns). ClariQ features nearly 
 As such below, we provide a short summary of the data characteristics, both for the training and test set:
 
 ### ClariQ Train
-Feature  							| Value
-------------------------------| -----
-\# topics 						| 237
+Feature  						| Value
+--------------------------------| -----
+\# train (dev) topics			| 187 (50)
 \# faceted topics 				| 141
 \# ambiguous topics 			| 57
-\# single topics					| 39
+\# single topics				| 39
 \# facets 						| 891
+\# total questions              | 3,929
+\# single-turn conversations    | 11,489
+\# multi-turn conversations     | ~ 1 million 
+\# documents                    | ~ 2 million
+
+
+
+
 
 ### ClariQ Test
 Feature  							| Value
 ------------------------------| -----
-\# topics 						| 61	
+\# topics 					  | 61	
+\# facets                     | ~ 300
+\# total questions            | 3,929
+\# single-turn conversations  | ~ 5K
+\# multi-turn conversations   | ~ 1 million
+\# documents                  | ~ 600K
 
+Please note that some of the stats related to the test set is approximate.
 Below, we provide a brief overview of the structure of the data, as well as a guideline on how to submit the runs.
 
 ## Files
@@ -201,32 +277,42 @@ As the description above is self-contained in most cases, we only add some addit
 
 Below, we give some examples of how to use the script and what to expect as output:
 
-	python ./src/clariq_eval_tool.py --eval_task document_relevance --data_dir ./data/ --run_file ./sample_runs/dev_best_q --out_file ./sample_runs/dev_best_q.eval
+	python ./src/clariq_eval_tool.py --eval_task document_relevance \
+	                                 --data_dir ./data/ \
+	                                 --experiment_type dev \
+	                                 --run_file ./sample_runs/dev_best_q \
+	                                 --out_file ./sample_runs/dev_best_q.eval
 
 Would produce the output below:
 
-	NDCG1: 0.3032544378698225
-	NDCG3: 0.2763521615355414
-	NDCG5: 0.25752045424342557
-	NDCG10: 0.2408452054362017
-	NDCG20: 0.22471618779033298
-	P1: 0.38461538461538464
-	P3: 0.3412228796844181
-	P5: 0.30650887573964497
-	P10: 0.27218934911242604
-	P20: 0.22810650887573966
-	MRR100: 0.4966265874556661
+    NDCG1: 0.2942708333333333
+    NDCG3: 0.25778462800726465
+    NDCG5: 0.24697827353140434
+    NDCG10: 0.22726519398403755
+    NDCG20: 0.19582055938247206
+    P1: 0.36875
+    P3: 0.29583333333333334
+    P5: 0.2675
+    P10: 0.22625
+    P20: 0.16125
+    MRR100: 0.45411771321729144
+
 
 An example on question relevance:
 
-	python ./src/clariq_eval_tool.py --eval_task question_relevance --data_dir ./data/ --run_file ./sample_runs/dev_best_q --out_file ./sample_runs/dev_best_q.eval
+	python ./src/clariq_eval_tool.py --eval_task question_relevance \
+	                                 --data_dir ./data/ \
+                                     --experiment_type dev \
+                                     --run_file ./sample_runs/dev_bm25 \
+                                     --out_file ./sample_runs/dev_bm25_question_relevance.eval
 
 Would produce the output below:
 
-	Recall5: 0.07384236841589782
-	Recall10: 0.07384236841589782
-	Recall20: 0.07384236841589782
-	Recall30: 0.07384236841589782
+	Recall5: 0.3245570421150917
+    Recall10: 0.5638042646208281
+    Recall20: 0.6674997108155003
+    Recall30: 0.6912818698329535
+
 
 ## Run file format
 Each run consists of two separate files: 
@@ -264,7 +350,9 @@ This file is supposed to contain the predicted `clarification_need` labels. Ther
 Please send two files per run as described above to `m.aliannejadi@uva.nl`, indicating your team's name, as well as your run ID. 
 
 ## Sample Baseline Code
-A sample Colab Notebook of a simple baseline model can be found [here](#). The baseline model ranks the questions using a BM25 ranker.
+A sample Colab Notebook of a simple baseline model can be found [here](https://colab.research.google.com/drive/1g_Sc9j5fYT1hiOxif6BVH5NHNt-icxtT?usp=sharing). The baseline model ranks the questions using a BM25 ranker.
+The same baseline can also be found in the repo under `./src/clariq_baseline_bm25.ipynb`. It is a very simple baseline,
+ranking the questions simply by their BM25 relevance score compared to the `original_request`.
 
 ## Questions
 Please contact us via `m.aliannejadi@uva.nl` should you have any questions, comments, or concerns regarding the challenge.
