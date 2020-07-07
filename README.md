@@ -83,20 +83,6 @@ Feature  						| Value
 \# multi-turn conversations     | ~ 1 million 
 \# documents                    | ~ 2 million
 
-
-
-
-
-### ClariQ Test
-Feature  							| Value
-------------------------------| -----
-\# topics 					  | 61	
-\# facets                     | ~ 300
-\# total questions            | 3,929
-\# single-turn conversations  | ~ 5K
-\# multi-turn conversations   | ~ 1 million
-\# documents                  | ~ 600K
-
 Please note that some of the stats related to the test set is approximate.
 Below, we provide a brief overview of the structure of the data, as well as a guideline on how to submit the runs.
 
