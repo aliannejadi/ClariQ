@@ -347,7 +347,7 @@ This file is supposed to contain the predicted `clarification_need` labels. Ther
     182 4
 
 ## Run Submission
-Please send two files per run as described above to `m.aliannejadi@uva.nl`, indicating your team's name, as well as your run ID. 
+Please send two files per run as described above to `clariq@convai.io`, indicating your team's name, as well as your run ID.  You'll also need to share your GitHub repository with us.
 
 ## Sample Baseline Code
 A sample Colab Notebook of a simple baseline model can be found [here](https://colab.research.google.com/drive/1g_Sc9j5fYT1hiOxif6BVH5NHNt-icxtT?usp=sharing). The baseline model ranks the questions using a BM25 ranker.
@@ -355,7 +355,7 @@ The same baseline can also be found in the repo under `./src/clariq_baseline_bm2
 ranking the questions simply by their BM25 relevance score compared to the `original_request`.
 
 ## Questions
-Please contact us via `m.aliannejadi@uva.nl` should you have any questions, comments, or concerns regarding the challenge.
+Please contact us via `clariq@convai.io` should you have any questions, comments, or concerns regarding the challenge.
 
 ## Acknowledgments
 The challenge is organized as a joint effort by the University of Amsterdam, Microsoft, Google, University of Glasgow, and MIPT. We would like to thank Microsoft for their generous support of data annotation costs. 
