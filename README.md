@@ -302,16 +302,16 @@ An example on question relevance:
 
 	python ./src/clariq_eval_tool.py --eval_task question_relevance \
 	                                 --data_dir ./data/ \
-                                     --experiment_type dev \
-                                     --run_file ./sample_runs/dev_bm25 \
-                                     --out_file ./sample_runs/dev_bm25_question_relevance.eval
+	                                 --experiment_type dev \
+	                                 --run_file ./sample_runs/dev_bm25 \
+	                                 --out_file ./sample_runs/dev_bm25_question_relevance.eval
 
 Would produce the output below:
 
 	Recall5: 0.3245570421150917
-    Recall10: 0.5638042646208281
-    Recall20: 0.6674997108155003
-    Recall30: 0.6912818698329535
+	Recall10: 0.5638042646208281
+	Recall20: 0.6674997108155003
+	Recall30: 0.6912818698329535
 
 
 ## Run file format
