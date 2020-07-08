@@ -105,20 +105,20 @@ Below we list the files in the repository:
 In the `train.tsv` and `dev.tsv` files, you will find these fields:
 
 
-* `topic_id`: the ID of the topic (query).
-* `query`: the query (text) that initiates the conversation.
+* `topic_id`: the ID of the topic (`initial_request`).
+* `initial_request`: the query (text) that initiates the conversation.
 * `topic_desc`: a full description of the topic as it appears in the TREC Web Track data.
-* `clarification_need`: a label from 1 to 4, indicating how much it is needed to clarify a topic. If a query is self-contained and would not need any clarification, the label would be 1. While if a query is absolutely ambiguous, making it impossible for a search engine to guess the user's right intent before clarification, the label would be 4.
+* `clarification_need`: a label from 1 to 4, indicating how much it is needed to clarify a topic. If an `initial_request` is self-contained and would not need any clarification, the label would be 1. While if a `initial_request` is absolutely ambiguous, making it impossible for a search engine to guess the user's right intent before clarification, the label would be 4.
 * `facet_id`: the ID of the facet.
 * `facet_desc`: a full description of the facet (information need) as it appears in the TREC Web Track data.
 * `question_id`: the ID of the question as it appears in `question_bank.tsv`.
 * `question`: a clarifying question that the system can pose to the user for the current topic and facet.
-* `answer`: an answer to the clarifying question, assuming that the user is in the context of the current row (i.e., the user's initial query is `query`, their information need is `facet_desc`, and `question` has been posed to the user).
+* `answer`: an answer to the clarifying question, assuming that the user is in the context of the current row (i.e., the user's initial query is ``initial_request``, their information need is `facet_desc`, and `question` has been posed to the user).
 
 Below, you can find a few example rows of `train.tsv`:
 
 
-topic\_id | query | topic\_desc | clarification\_need | facet\_id | facet\_desc | question\_id | question | answer 
+topic\_id | initial\_request | topic\_desc | clarification\_need | facet\_id | facet\_desc | question\_id | question | answer 
 ---------|---------|--------------|----------------------------|-------|-----------|--------|-----|---
 14	 | I'm interested in dinosaurs |	I want to find information about and pictures of dinosaurs. | 	4 | 	F0159	| Go to the Discovery Channel's dinosaur site, which has pictures of dinosaurs and games. | 	Q00173 | 	are you interested in coloring books | 	no i just want to find the discovery channels website
 14	| I'm interested in dinosaurs | 	I want to find information about and pictures of dinosaurs.	| 4 | F0159	| Go to the Discovery Channel's dinosaur site, which has pictures of dinosaurs and games. | 	Q03021	| which dinosaurs are you interested in | 	im not asking for that i just want to go to the discovery channel dinosaur page
@@ -126,7 +126,7 @@ topic\_id | query | topic\_desc | clarification\_need | facet\_id | facet\_desc 
 ### `test.tsv`:
 `test.tsv` only contains the list of test topics, as well as their ID's. Below we see some sample rows:
 
-topic\_id | query
+topic\_id | initial\_request
 ------|--------
 201	 | I would like to know more about raspberry pi
 202	 | Give me information on uss carl vinson.
