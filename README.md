@@ -67,8 +67,8 @@ We have extended the [Qulac](https://github.com/aliannejadi/qulac) [[1]](#ref1) 
  In addition, we have added some new topics, questions, and answers in the training set. 
  The test set is completely unseen and newly collected. 
  Like Qulac, ClariQ consists of single-turn conversations (`initial_request`, followed by clarifying `question` and `answer`).
- In addition, it comes with synthetic multi-turn conversations (up to three turns). ClariQ features nearly 
-As such below, we provide a short summary of the data characteristics, both for the training and test set:
+ In addition, it comes with synthetic multi-turn conversations (up to three turns). ClariQ features approximately 18K single-turn conversations, as well as 1.8 million multi-turn conversations. 
+Below, we provide a short summary of the data characteristics, for the training set:
 
 ### ClariQ Train
 Feature  						| Value
@@ -83,7 +83,6 @@ Feature  						| Value
 \# multi-turn conversations     | ~ 1 million 
 \# documents                    | ~ 2 million
 
-Please note that some of the stats related to the test set is approximate.
 Below, we provide a brief overview of the structure of the data, as well as a guideline on how to submit the runs.
 
 ## Files
