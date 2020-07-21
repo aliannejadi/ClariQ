@@ -1,5 +1,7 @@
 # ClariQ
 
+[![Join the chat at https://gitter.im/ClariQ/community](https://badges.gitter.im/ClariQ/community.svg)](https://gitter.im/ClariQ/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Introduction
 
 The challenge is organized as part of the Search-oriented Conversational AI (SCAI) EMNLP
