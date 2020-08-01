@@ -11,11 +11,11 @@ from sklearn.metrics import f1_score
 
 def evaluate_clarification_need(experiment_type, data_dir, run_file, out_file):
     if experiment_type in ['train', 'dev']:
-        label_file_path = path.join(data_dir, '{}.json'.format(experiment_type))
+        label_file_path = path.join(data_dir, '{}.tsv'.format(experiment_type))
     else:
-        label_file_path = path.join(data_dir, '{}.json'.format(experiment_type))
+        label_file_path = path.join(data_dir, '{}.tsv'.format(experiment_type))
         raise FileNotFoundError  # TODO: remove when test labels released.
-    clarification_labels_dict = pd.read_json(label_file_path).drop_duplicates('topic_id').set_index('topic_id')[
+    clarification_labels_dict = pd.read_csv(label_file_path, sep='\t').drop_duplicates('topic_id').set_index('topic_id')[
         'clarification_need'].to_dict()
     run_dict = pd.read_csv(run_file, sep=' ', header=None).set_index(0)[1].to_dict()
     y_true = []
