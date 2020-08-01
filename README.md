@@ -1,5 +1,7 @@
 # ClariQ
 
+[![Join the chat at https://gitter.im/ClariQ/community](https://badges.gitter.im/ClariQ/community.svg)](https://gitter.im/ClariQ/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Introduction
 
 The challenge is organized as part of the Search-oriented Conversational AI (SCAI) EMNLP
@@ -67,8 +69,8 @@ We have extended the [Qulac](https://github.com/aliannejadi/qulac) [[1]](#ref1) 
  In addition, we have added some new topics, questions, and answers in the training set. 
  The test set is completely unseen and newly collected. 
  Like Qulac, ClariQ consists of single-turn conversations (`initial_request`, followed by clarifying `question` and `answer`).
- In addition, it comes with synthetic multi-turn conversations (up to three turns). ClariQ features nearly 
-As such below, we provide a short summary of the data characteristics, both for the training and test set:
+ In addition, it comes with synthetic multi-turn conversations (up to three turns). ClariQ features approximately 18K single-turn conversations, as well as 1.8 million multi-turn conversations. 
+Below, we provide a short summary of the data characteristics, for the training set:
 
 ### ClariQ Train
 Feature  						| Value
@@ -83,21 +85,6 @@ Feature  						| Value
 \# multi-turn conversations     | ~ 1 million 
 \# documents                    | ~ 2 million
 
-
-
-
-
-### ClariQ Test
-Feature  							| Value
-------------------------------| -----
-\# topics 					  | 61	
-\# facets                     | ~ 300
-\# total questions            | 3,929
-\# single-turn conversations  | ~ 5K
-\# multi-turn conversations   | ~ 1 million
-\# documents                  | ~ 600K
-
-Please note that some of the stats related to the test set is approximate.
 Below, we provide a brief overview of the structure of the data, as well as a guideline on how to submit the runs.
 
 ## Files
@@ -119,20 +106,20 @@ Below we list the files in the repository:
 In the `train.tsv` and `dev.tsv` files, you will find these fields:
 
 
-* `topic_id`: the ID of the topic (query).
-* `query`: the query (text) that initiates the conversation.
+* `topic_id`: the ID of the topic (`initial_request`).
+* `initial_request`: the query (text) that initiates the conversation.
 * `topic_desc`: a full description of the topic as it appears in the TREC Web Track data.
-* `clarification_need`: a label from 1 to 4, indicating how much it is needed to clarify a topic. If a query is self-contained and would not need any clarification, the label would be 1. While if a query is absolutely ambiguous, making it impossible for a search engine to guess the user's right intent before clarification, the label would be 4.
+* `clarification_need`: a label from 1 to 4, indicating how much it is needed to clarify a topic. If an `initial_request` is self-contained and would not need any clarification, the label would be 1. While if a `initial_request` is absolutely ambiguous, making it impossible for a search engine to guess the user's right intent before clarification, the label would be 4.
 * `facet_id`: the ID of the facet.
 * `facet_desc`: a full description of the facet (information need) as it appears in the TREC Web Track data.
 * `question_id`: the ID of the question as it appears in `question_bank.tsv`.
 * `question`: a clarifying question that the system can pose to the user for the current topic and facet.
-* `answer`: an answer to the clarifying question, assuming that the user is in the context of the current row (i.e., the user's initial query is `query`, their information need is `facet_desc`, and `question` has been posed to the user).
+* `answer`: an answer to the clarifying question, assuming that the user is in the context of the current row (i.e., the user's initial query is ``initial_request``, their information need is `facet_desc`, and `question` has been posed to the user).
 
 Below, you can find a few example rows of `train.tsv`:
 
 
-topic\_id | query | topic\_desc | clarification\_need | facet\_id | facet\_desc | question\_id | question | answer 
+topic\_id | initial\_request | topic\_desc | clarification\_need | facet\_id | facet\_desc | question\_id | question | answer 
 ---------|---------|--------------|----------------------------|-------|-----------|--------|-----|---
 14	 | I'm interested in dinosaurs |	I want to find information about and pictures of dinosaurs. | 	4 | 	F0159	| Go to the Discovery Channel's dinosaur site, which has pictures of dinosaurs and games. | 	Q00173 | 	are you interested in coloring books | 	no i just want to find the discovery channels website
 14	| I'm interested in dinosaurs | 	I want to find information about and pictures of dinosaurs.	| 4 | F0159	| Go to the Discovery Channel's dinosaur site, which has pictures of dinosaurs and games. | 	Q03021	| which dinosaurs are you interested in | 	im not asking for that i just want to go to the discovery channel dinosaur page
@@ -140,7 +127,7 @@ topic\_id | query | topic\_desc | clarification\_need | facet\_id | facet\_desc 
 ### `test.tsv`:
 `test.tsv` only contains the list of test topics, as well as their ID's. Below we see some sample rows:
 
-topic\_id | query
+topic\_id | initial\_request
 ------|--------
 201	 | I would like to know more about raspberry pi
 202	 | Give me information on uss carl vinson.
@@ -302,16 +289,16 @@ An example on question relevance:
 
 	python ./src/clariq_eval_tool.py --eval_task question_relevance \
 	                                 --data_dir ./data/ \
-                                     --experiment_type dev \
-                                     --run_file ./sample_runs/dev_bm25 \
-                                     --out_file ./sample_runs/dev_bm25_question_relevance.eval
+	                                 --experiment_type dev \
+	                                 --run_file ./sample_runs/dev_bm25 \
+	                                 --out_file ./sample_runs/dev_bm25_question_relevance.eval
 
 Would produce the output below:
 
 	Recall5: 0.3245570421150917
-    Recall10: 0.5638042646208281
-    Recall20: 0.6674997108155003
-    Recall30: 0.6912818698329535
+	Recall10: 0.5638042646208281
+	Recall20: 0.6674997108155003
+	Recall30: 0.6912818698329535
 
 
 ## Run file format
@@ -347,7 +334,7 @@ This file is supposed to contain the predicted `clarification_need` labels. Ther
     182 4
 
 ## Run Submission
-Please send two files per run as described above to `m.aliannejadi@uva.nl`, indicating your team's name, as well as your run ID. 
+Please send two files per run as described above to `clariq@convai.io`, indicating your team's name, as well as your run ID.  You'll also need to share your GitHub repository with us.
 
 ## Sample Baseline Code
 A sample Colab Notebook of a simple baseline model can be found [here](https://colab.research.google.com/drive/1g_Sc9j5fYT1hiOxif6BVH5NHNt-icxtT?usp=sharing). The baseline model ranks the questions using a BM25 ranker.
@@ -355,7 +342,7 @@ The same baseline can also be found in the repo under `./src/clariq_baseline_bm2
 ranking the questions simply by their BM25 relevance score compared to the `original_request`.
 
 ## Questions
-Please contact us via `m.aliannejadi@uva.nl` should you have any questions, comments, or concerns regarding the challenge.
+Please contact us via `clariq@convai.io` should you have any questions, comments, or concerns regarding the challenge.
 
 ## Acknowledgments
 The challenge is organized as a joint effort by the University of Amsterdam, Microsoft, Google, University of Glasgow, and MIPT. We would like to thank Microsoft for their generous support of data annotation costs. 
