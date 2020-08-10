@@ -337,9 +337,13 @@ This file is supposed to contain the predicted `clarification_need` labels. Ther
 Please send two files per run as described above to `clariq@convai.io`, indicating your team's name, as well as your run ID.  You'll also need to share your GitHub repository with us.
 
 ## Sample Baseline Code
+### BM25 Ranker
 A sample Colab Notebook of a simple baseline model can be found [here](https://colab.research.google.com/drive/1g_Sc9j5fYT1hiOxif6BVH5NHNt-icxtT?usp=sharing). The baseline model ranks the questions using a BM25 ranker.
 The same baseline can also be found in the repo under `./src/clariq_baseline_bm25.ipynb`. It is a very simple baseline,
 ranking the questions simply by their BM25 relevance score compared to the `original_request`.
+
+### BERT-based Ranker
+We have trained a BERT-based model for the `question_relevance` task. The model fine-tunes BERT for retrieve relevant questions to a given topic. The model is tested on two different evaluation setups, i.e., question reranking and question ranking. The reranking model takes the top 30 predictions of BM25 and reranks them, while the full ranking model ranks all the questions available in the question bank. The results of the two models can be found in the [leaderboard](http://convai.io/). Special thanks to [Gustavo Penha](https://guzpenha.github.io/guzblog/), who kindly developed the models based on the [Transformer Rankers](https://guzpenha.github.io/transformer_rankers/) library, and shared the code in a [Google Colab Notebook](https://colab.research.google.com/drive/1RHHbh5KQY-QDA7kV7wyHFJ7B_w5RRHzP?usp=sharing).
 
 ## Questions
 Please contact us via `clariq@convai.io` should you have any questions, comments, or concerns regarding the challenge.
@@ -347,6 +351,7 @@ Please contact us via `clariq@convai.io` should you have any questions, comments
 ## Acknowledgments
 The challenge is organized as a joint effort by the University of Amsterdam, Microsoft, Google, University of Glasgow, and MIPT. We would like to thank Microsoft for their generous support of data annotation costs. 
 We would also like to thank the [Webis Group](https://webis.de/) for giving us access to ChatNoir search API.
+We appreciate [Gustavo Penha](https://guzpenha.github.io/guzblog/)'s efforts in development of BERT-based baselines for the task.
 Thanks to the crowd workers for their invaluable help in annotating ClariQ.
 
 ## References
