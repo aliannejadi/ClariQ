@@ -13,7 +13,7 @@ def evaluate_clarification_need(experiment_type, data_dir, run_file, out_file):
     if experiment_type in ['train', 'dev']:
         label_file_path = path.join(data_dir, '{}.tsv'.format(experiment_type))
     else:
-        label_file_path = path.join(data_dir, '{}.tsv'.format(experiment_type))
+        label_file_path = path.join(data_dir, '{}.tsv'.format('test_with_labels'))
         raise FileNotFoundError  # TODO: remove when test labels released.
     clarification_labels_dict = pd.read_csv(label_file_path, sep='\t').drop_duplicates('topic_id').set_index('topic_id')[
         'clarification_need'].to_dict()
@@ -77,7 +77,7 @@ def get_eval_topic_file_paths(data_dir, experiment_type):
     else:
         eval_file_path = path.join(data_dir, 'single_turn_test_eval.pkl')
         topic_file_path = path.join(data_dir, 'test_with_labels.tsv')
-        # raise FileNotFoundError  # TODO: remove when test eval released.
+        raise FileNotFoundError  # TODO: remove when test eval released.
     return eval_file_path, topic_file_path
 
 
