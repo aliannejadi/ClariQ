@@ -14,7 +14,7 @@ def evaluate_clarification_need(experiment_type, data_dir, run_file, out_file):
         label_file_path = path.join(data_dir, '{}.tsv'.format(experiment_type))
     else:
         label_file_path = path.join(data_dir, '{}.tsv'.format('test_with_labels'))
-        raise FileNotFoundError  # TODO: remove when test labels released.
+        # raise FileNotFoundError  # TODO: remove when test labels released.
     clarification_labels_dict = pd.read_csv(label_file_path, sep='\t').drop_duplicates('topic_id').set_index('topic_id')[
         'clarification_need'].to_dict()
     run_dict = pd.read_csv(run_file, sep=' ', header=None).set_index(0)[1].to_dict()
@@ -26,9 +26,9 @@ def evaluate_clarification_need(experiment_type, data_dir, run_file, out_file):
             y_pred.append(run_dict[topic_id])
         except KeyError:  # no prediction provided in the run file, so we put a dummy label.
             y_pred.append(0)
-    print('Precision: ', precision_score(y_true, y_pred, average='micro'))
-    print('Recall: ', recall_score(y_true, y_pred, average='micro'))
-    print('F1:', f1_score(y_true, y_pred, average='micro'))
+    print('Precision: ', precision_score(y_true, y_pred, average='weighted'))
+    print('Recall: ', recall_score(y_true, y_pred, average='weighted'))
+    print('F1:', f1_score(y_true, y_pred, average='weighted'))
 
 
 def evaluate_document_relevance(experiment_type, data_dir, run_file, out_file, multi_turn):
@@ -77,7 +77,7 @@ def get_eval_topic_file_paths(data_dir, experiment_type):
     else:
         eval_file_path = path.join(data_dir, 'single_turn_test_eval.pkl')
         topic_file_path = path.join(data_dir, 'test_with_labels.tsv')
-        raise FileNotFoundError  # TODO: remove when test eval released.
+        # raise FileNotFoundError  # TODO: remove when test eval released.
     return eval_file_path, topic_file_path
 
 
@@ -133,7 +133,7 @@ def evaluate_question_relevance(experiment_type, data_dir, run_file, out_file):
     if out_file != '':
         with open(out_file, 'w') as fo:
             json.dump(recall_score_dict, fo)
-            
+
     for metric in recall_score_dict:
         print('{}: {}'.format(metric, mean(recall_score_dict[metric][k] for k in recall_score_dict[metric])))
 
