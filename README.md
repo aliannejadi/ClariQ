@@ -220,6 +220,20 @@ Notice that this `dict` contains the following evaluation metrics:
 More information on how to use `ChatNoir`'s API: [https://www.chatnoir.eu/doc/api/#retrieving-full-documents](https://www.chatnoir.eu/doc/api/#retrieving-full-documents)
 * Get a pre-build index to re-run document retrieval. We advise the participants to contact us if they require access to pre-build index files to re-run document retrieval. We recommend viewing the `QL.py` in [Qulac](https://github.com/aliannejadi/qulac)'s repository for more information on how the pre-build index files could be used. 
 
+### `train.qrel` & `dev.qrel`
+These files contain the relevance assessments of ClueWeb09 and ClueWeb12 collections for every facet in the train and dev sets, respectively.
+They follow the conventional TREC format for qrel files, that is:
+
+    <facet_id> 0 <document_id> <relevance_score>
+    
+Some sample lines of `train.qrel` file is shown below:
+
+    F0001 0 clueweb09-en0038-74-08250 1
+    F0001 0 clueweb09-enwp01-17-11113 1
+    F0002 0 clueweb09-en0001-02-21241 1
+    F0002 0 clueweb09-en0006-52-11056 1
+
+
 ## ClariQ Evaluation Script
 We provide an evaluation script, called `clariq_eval_tool.py` to evaluate submitted runs. We strongly recommend participants to evaluate their models on the `dev` set using this script before submitting their runs. `clariq_eval_tool.py` can be used to evaluate three subtasks:
 
