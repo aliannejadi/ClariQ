@@ -9,14 +9,15 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 
 
-def evaluate_clarification_need(experiment_type, data_dir, run_file, out_file):
+def evaluate_clarification_need(experiment_type, data_dir, run_file, out_file, leaderboard):
     if experiment_type in ['train', 'dev']:
         label_file_path = path.join(data_dir, '{}.tsv'.format(experiment_type))
     else:
         label_file_path = path.join(data_dir, '{}.tsv'.format('test_with_labels'))
         # raise FileNotFoundError  # TODO: remove when test labels released.
-    clarification_labels_dict = pd.read_csv(label_file_path, sep='\t').drop_duplicates('topic_id').set_index('topic_id')[
-        'clarification_need'].to_dict()
+    clarification_labels_dict = \
+        pd.read_csv(label_file_path, sep='\t').drop_duplicates('topic_id').set_index('topic_id')[
+            'clarification_need'].to_dict()
     run_dict = pd.read_csv(run_file, sep=' ', header=None).set_index(0)[1].to_dict()
     y_true = []
     y_pred = []
@@ -26,12 +27,20 @@ def evaluate_clarification_need(experiment_type, data_dir, run_file, out_file):
             y_pred.append(run_dict[topic_id])
         except KeyError:  # no prediction provided in the run file, so we put a dummy label.
             y_pred.append(0)
-    print('Precision: ', precision_score(y_true, y_pred, average='weighted'))
-    print('Recall: ', recall_score(y_true, y_pred, average='weighted'))
-    print('F1:', f1_score(y_true, y_pred, average='weighted'))
+
+    precision = precision_score(y_true, y_pred, average='weighted')
+    recall = recall_score(y_true, y_pred, average='weighted')
+    f1 = f1_score(y_true, y_pred, average='weighted')
+
+    if leaderboard:
+        print('<td>{:.4f}</td>\n<td>{:.4f}</td>\n<td>{:.4f}</td>'.format(precision, recall,f1))
+    else:
+        print('Precision: ', precision)
+        print('Recall: ', recall)
+        print('F1:', f1)
 
 
-def evaluate_document_relevance(experiment_type, data_dir, run_file, out_file, multi_turn):
+def evaluate_document_relevance(experiment_type, data_dir, run_file, out_file, multi_turn, leaderboard):
     eval_file_path, topic_file_path = get_eval_topic_file_paths(data_dir, experiment_type)
     eval_dict = load_eval_dict(eval_file_path, topic_file_path)
     run_dict = load_run_dict_doc_relevance(run_file)
@@ -45,8 +54,18 @@ def evaluate_document_relevance(experiment_type, data_dir, run_file, out_file, m
         with open(out_file, 'w') as fo:
             json.dump(performance_dict, fo)
     # compute the mean performance per metric and print
+    mean_performance = {}
     for metric in performance_dict:
-        print('{}: {}'.format(metric, mean(performance_dict[metric][k] for k in performance_dict[metric])))
+        mean_performance[metric] = mean(performance_dict[metric][k] for k in performance_dict[metric])
+
+    if leaderboard:
+        print('| RANK | CREATOR | MODELNAME | {:.4f} | {:.4f} | {:.4f} | {:.4f} |'.format(mean_performance['MRR100'],
+                                                                                          mean_performance['P1'],
+                                                                                          mean_performance['NDCG3'],
+                                                                                          mean_performance['NDCG5']))
+    else:
+        for metric in performance_dict:
+            print('{}: {}'.format(metric, mean_performance[metric]))
 
 
 def get_document_relevance_for_metric(eval_dict, facet_to_topic_dict, metric, multi_turn, performance_dict, run_dict):
@@ -66,7 +85,7 @@ def get_selected_question(facet_id, facet_to_topic_dict, multi_turn, run_dict):
         selected_q = run_dict[facet_id]
     else:
         selected_q = run_dict[facet_to_topic_dict[facet_id]]
-    selected_q = 'MIN' if selected_q == 'MAX' else selected_q # to avoid submitting MAX results.
+    selected_q = 'MIN' if selected_q == 'MAX' else selected_q  # to avoid submitting MAX results.
     return selected_q
 
 
@@ -109,7 +128,7 @@ def load_run_dict_doc_relevance(run_file):
     return run_dict
 
 
-def evaluate_question_relevance(experiment_type, data_dir, run_file, out_file):
+def evaluate_question_relevance(experiment_type, data_dir, run_file, out_file, leaderboard):
     eval_file_path, topic_file_path = get_eval_topic_file_paths(data_dir, experiment_type)
     topic_df = pd.read_csv(topic_file_path, sep='\t')
     topic_question_set_dict = topic_df.groupby('topic_id')['question_id'].agg(set).to_dict()
@@ -134,8 +153,18 @@ def evaluate_question_relevance(experiment_type, data_dir, run_file, out_file):
         with open(out_file, 'w') as fo:
             json.dump(recall_score_dict, fo)
 
+    mean_performance = {}
     for metric in recall_score_dict:
-        print('{}: {}'.format(metric, mean(recall_score_dict[metric][k] for k in recall_score_dict[metric])))
+        mean_performance[metric] = mean(recall_score_dict[metric][k] for k in recall_score_dict[metric])
+
+    if leaderboard:
+        print('| RANK | CREATOR | MODELNAME | {:.4f} | {:.4f} | {:.4f} | {:.4f} |'.format(mean_performance['Recall5'],
+                                                                                          mean_performance['Recall10'],
+                                                                                          mean_performance['Recall20'],
+                                                                                          mean_performance['Recall30']))
+    else:
+        for metric in recall_score_dict:
+            print('{}: {}'.format(metric, mean_performance[metric]))
 
 
 def main():
@@ -175,19 +204,23 @@ def main():
                         help='Determines if the results are on multi-turn conversations. Conversation is assumed to '
                              'be single-turn if not specified.',
                         required=False)
+    parser.add_argument('--leaderboard',
+                        dest='leaderboard', action='store_true',
+                        help='Determines if the results output must be in the format to be added to the leaderboard',
+                        required=False)
     parser.set_defaults(multi_turn=False)
 
     input_args = parser.parse_args()
 
     if input_args.eval_task == 'clarification_need':
         evaluate_clarification_need(input_args.experiment_type, input_args.data_dir, input_args.run_file,
-                                    input_args.out_file)
+                                    input_args.out_file, input_args.leaderboard)
     elif input_args.eval_task == 'document_relevance':
         evaluate_document_relevance(input_args.experiment_type, input_args.data_dir, input_args.run_file,
-                                    input_args.out_file, input_args.multi_turn)
+                                    input_args.out_file, input_args.multi_turn, input_args.leaderboard)
     elif input_args.eval_task == 'question_relevance':
         evaluate_question_relevance(input_args.experiment_type, input_args.data_dir, input_args.run_file,
-                                    input_args.out_file)
+                                    input_args.out_file, input_args.leaderboard)
 
 
 if __name__ == '__main__':
