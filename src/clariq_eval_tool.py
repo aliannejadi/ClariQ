@@ -33,14 +33,14 @@ def evaluate_clarification_need(experiment_type, data_dir, run_file, out_file, l
     f1 = f1_score(y_true, y_pred, average='weighted')
 
     if leaderboard:
-        print('<td>{:.4f}</td>\n<td>{:.4f}</td>\n<td>{:.4f}</td>'.format(precision, recall,f1))
+        print('<td>{:.4f}</td>\n<td>{:.4f}</td>\n<td>{:.4f}</td>'.format(precision, recall, f1))
     else:
         print('Precision: ', precision)
         print('Recall: ', recall)
         print('F1:', f1)
 
 
-def evaluate_document_relevance(experiment_type, data_dir, run_file, out_file, multi_turn, leaderboard):
+def evaluate_document_relevance_single_turn(experiment_type, data_dir, run_file, out_file, leaderboard):
     eval_file_path, topic_file_path = get_eval_topic_file_paths(data_dir, experiment_type)
     eval_dict = load_eval_dict(eval_file_path, topic_file_path)
     run_dict = load_run_dict_doc_relevance(run_file)
@@ -48,7 +48,7 @@ def evaluate_document_relevance(experiment_type, data_dir, run_file, out_file, m
     performance_dict = {}
     for metric in eval_dict:
         performance_dict[metric] = {}
-        get_document_relevance_for_metric(eval_dict, facet_to_topic_dict, metric, multi_turn, performance_dict,
+        get_document_relevance_for_metric(eval_dict, facet_to_topic_dict, metric, False, performance_dict,
                                           run_dict)
     if out_file != '':
         with open(out_file, 'w') as fo:
@@ -68,31 +68,68 @@ def evaluate_document_relevance(experiment_type, data_dir, run_file, out_file, m
             print('{}: {}'.format(metric, mean_performance[metric]))
 
 
-def get_document_relevance_for_metric(eval_dict, facet_to_topic_dict, metric, multi_turn, performance_dict, run_dict):
-    for facet_id in eval_dict[metric]:
-        try:
-            selected_q = get_selected_question(facet_id, facet_to_topic_dict, multi_turn, run_dict)
-            try:
-                performance_dict[metric][facet_id] = eval_dict[metric][facet_id][selected_q]['with_answer']
-            except KeyError:  # if question is not among candidate question, we consider it equal to minimum performance.
-                performance_dict[metric][facet_id] = eval_dict[metric][facet_id]['MIN']['with_answer']
-        except KeyError:  # if there is no prediction provided for a facet, we consider performance 0.
-            performance_dict[metric][facet_id] = 0.
-
-
-def get_selected_question(facet_id, facet_to_topic_dict, multi_turn, run_dict):
-    if multi_turn:
-        selected_q = run_dict[facet_id]
+def evaluate_document_relevance_multi_turn(experiment_type, data_dir, run_file, out_file, leaderboard):
+    eval_file_path, synthetic_file_path = get_eval_topic_file_paths(data_dir, experiment_type, True)
+    eval_dict = load_eval_dict(eval_file_path, synthetic_file_path, True)
+    run_dict = load_run_dict_doc_relevance(run_file, data_dir, True)
+    performance_dict = {}
+    for metric in eval_dict:
+        performance_dict[metric] = {}
+        get_document_relevance_for_metric(eval_dict, None, metric, True, performance_dict,
+                                          run_dict)
+    if out_file != '':
+        with open(out_file, 'w') as fo:
+            json.dump(performance_dict, fo)
+    # compute the mean performance per metric and print
+    mean_performance = {}
+    for metric in performance_dict:
+        mean_performance[metric] = mean(performance_dict[metric][k] for k in performance_dict[metric])
+    if leaderboard:
+        print('| RANK | CREATOR | MODELNAME | {:.4f} | {:.4f} | {:.4f} | {:.4f} |'.format(mean_performance['MRR100'],
+                                                                                          mean_performance['P1'],
+                                                                                          mean_performance['NDCG3'],
+                                                                                          mean_performance['NDCG5']))
     else:
-        selected_q = run_dict[facet_to_topic_dict[facet_id]]
+        for metric in performance_dict:
+            print('{}: {}'.format(metric, mean_performance[metric]))
+
+
+def evaluate_document_relevance(experiment_type, data_dir, run_file, out_file, multi_turn, leaderboard):
+    if multi_turn:
+        return evaluate_document_relevance_multi_turn(experiment_type, data_dir, run_file, out_file, leaderboard)
+    else:
+        return evaluate_document_relevance_single_turn(experiment_type, data_dir, run_file, out_file, leaderboard)
+
+
+def get_document_relevance_for_metric(eval_dict, facet_to_topic_dict, metric, multi_turn, performance_dict, run_dict):
+    for context_id in eval_dict[metric]:
+        try:
+            selected_q = get_selected_question(context_id, facet_to_topic_dict, multi_turn, run_dict)
+            try:
+                performance_dict[metric][context_id] = eval_dict[metric][context_id][selected_q]['with_answer']
+            except KeyError:  # if question is not among candidate question, we consider it equal to minimum performance.
+                performance_dict[metric][context_id] = eval_dict[metric][context_id]['MIN']['with_answer']
+        except KeyError:  # if there is no prediction provided for a facet, we consider performance 0.
+            performance_dict[metric][context_id] = 0.
+
+
+def get_selected_question(context_id, facet_to_topic_dict, multi_turn, run_dict):
+    if multi_turn:
+        selected_q = run_dict[context_id]
+    else:
+        selected_q = run_dict[facet_to_topic_dict[context_id]]
     selected_q = 'MIN' if selected_q == 'MAX' else selected_q  # to avoid submitting MAX results.
     return selected_q
 
 
-def get_eval_topic_file_paths(data_dir, experiment_type):
+def get_eval_topic_file_paths(data_dir, experiment_type, multi_turn=False):
     if experiment_type in ['train', 'dev']:
-        eval_file_path = path.join(data_dir, 'single_turn_train_eval.pkl')
-        topic_file_path = path.join(data_dir, '{}.tsv'.format(experiment_type))
+        if multi_turn:
+            eval_file_path = path.join(data_dir, 'multi_turn_{}_eval.pkl'.format(experiment_type))
+            topic_file_path = path.join(data_dir, '{}_synthetic.pkl'.format(experiment_type))
+        else:
+            eval_file_path = path.join(data_dir, 'single_turn_train_eval.pkl')
+            topic_file_path = path.join(data_dir, '{}.tsv'.format(experiment_type))
     else:
         eval_file_path = path.join(data_dir, 'single_turn_test_eval.pkl')
         topic_file_path = path.join(data_dir, 'test_with_labels.tsv')
@@ -106,24 +143,34 @@ def load_facet_to_topic_dict(topic_file_path):
     return facet_to_topic_dict
 
 
-def load_eval_dict(eval_file_path, topic_file_path):
-    topic_df = pd.read_csv(topic_file_path, sep='\t')
-    facet_array = topic_df['facet_id'].values
-    with open(eval_file_path, 'rb') as fi:
-        eval_dict = pickle.load(fi)
-    # we keep only the instances in the topic file.
-    new_eval_dict = {}
-    for metric in eval_dict:
-        new_eval_dict[metric] = {}
-        for fid in eval_dict[metric]:
-            if fid in facet_array:
-                new_eval_dict[metric][fid] = eval_dict[metric][fid]
-    return new_eval_dict
+def load_eval_dict(eval_file_path, topic_file_path, multi_turn):
+    if multi_turn:
+        with open(eval_file_path, 'rb') as fi:
+            eval_dict = pickle.load(fi)
+        return eval_dict
+    else:
+        topic_df = pd.read_csv(topic_file_path, sep='\t')
+        context_array = topic_df['facet_id'].values
+
+        with open(eval_file_path, 'rb') as fi:
+            eval_dict = pickle.load(fi)
+        # we keep only the instances in the topic file.
+        new_eval_dict = {}
+        for metric in eval_dict:
+            new_eval_dict[metric] = {}
+            for fid in eval_dict[metric]:
+                if fid in context_array:
+                    new_eval_dict[metric][fid] = eval_dict[metric][fid]
+        return new_eval_dict
 
 
-def load_run_dict_doc_relevance(run_file):
-    run_df = pd.read_csv(run_file, sep=' ', header=None)
+def load_run_dict_doc_relevance(run_file, data_folder='', multi_turn=False):
+    run_df = pd.read_csv(run_file, sep=' ', header=None).fillna('')
     run_df = run_df.sort_values(by=4).drop_duplicates(subset=[0], keep='last')  # we only keep the top ranked question.
+    if multi_turn:
+        question_dict = pd.read_csv(path.join(data_folder, 'question_bank.tsv'), sep='\t').fillna('').set_index('question')[
+            'question_id'].to_dict()
+        run_df[2] = run_df[2].map(question_dict)
     run_dict = run_df.set_index(0)[2].to_dict()  # we convert the run dataframe to dict.
     return run_dict
 
