@@ -61,7 +61,8 @@ clarifying questions we collected), aiming to maximize the precision, (2) or
 choose not to ask any question (by choosing `Q0001` from the question bank.)
 
 ### Stage 2: human-in-the-loop
-To be announced.
+The second stage of the ClariQ data challenge enables the top-performing teams of the first stage to evaluate their models with the help of human evaluators. To do so, we ask the teams to generate their responses in a given conversation and pass the results to human evaluators. We instruct the human evaluators to read and understand the context of the conversation and write a response to the system. The evaluator assumes that they are part of the conversation. We evaluate the performance of a system in two respects: (i) How much the conversation can help a user find the information they are looking for and (ii) How natural and realistic does the conversation appear to a human evaluator. 
+
 
 ## ClariQ Dataset
 We have extended the [Qulac](https://github.com/aliannejadi/qulac) [[1]](#ref1) dataset and base the competition mostly
@@ -95,6 +96,8 @@ Below we list the files in the repository:
 * `./data/question_bank.tsv` is a TSV file containing all the questions in the collection, as well as their ID's. Participants' models should select questions from this file.
 * `./data/top10k_docs_dict.pkl.tar.gz` is a `dict` containing the top 10,000 document ID's retrieved from ClueWeb09 and ClueWeb12 collections for each topic. This may be used by the participants who wish to leverage documents content in their models. 
 * `./data/single_turn_train_eval.pkl` is a `dict` containing the performance of each topic after asking a question and getting the answer. The evaluation tool that we provide uses this file to evaluate the selected questions.
+* `./data/multi_turn_train_eval.pkl.tar.gz.**` and `./data/multi_turn_dev_eval.pkl.tar.gz` are `dict`s that contain the performance of each conversation after asking a question from the `question_bank` and getting the answer from the user. The evaluation tool that we provide uses this file to evaluate the selected questions. Notice that these `dict`s are built based on the synthetic multi-turn conversations.
+* `./data/dev_synthetic.pkl.tar.gz` and `./data/train_synthetic.pkl.tar.gz` are two compressed `pickle` files that contain `dict`s of synthetic multi-turn conversations. We have generated these conversations following the method explained in [[1]](#ref1). 
 * `./src/clariq_eval_tool.py` is a python script to evaluate the runs. The participants may use this tool to evaluate their models on the `dev` set. We would use the same tool to evaluate the submitted runs on the `test` set.
 * `./sample_runs/` contains some sample runs and baselines. Among them, we have included the two oracle models `BestQuestion` and `WorstQuestion`, as well as `NoQuestion`, the model choosing no question. Participants may check these files as sample run files. Also, they could test the evaluation tool using these files.
 
@@ -144,16 +147,68 @@ Q02320	| what kind of pictures are you looking for
 
 **Note:** Question id `Q00001` is reserved for cases when a model predicts that asking clarifying questions is not required. Therefore, selecting `Q00001` means selecting no question.
 
-### `single_turn_train_eval.pkl`
-`single_turn_train_eval.pkl` is a `dict` of pre-computed document relevance results after asking each question.  The document relevance performance is calculated as follows:
+### `dev_synthetic.pkl.tar.gz` and `train_synthetic.pkl.tar.gz`:
+These files contain `dict`s of synthetically built multi-turn conversations (up to three turns). We follow the same approach explained in [[1]](#ref1) to generate these conversations. The format of these files is very similar to the format of the test file that will be fed to the system (see below), except for having the current question and answer of a conversation. Each record in this `dict` is identified by its topic, facet, conversation context, question, and answer. Below we see the `dict` structure:
 
-* For a facet, the selected question and its corresponding answer are added to the document retrieval system.
+	{<record_id>: {'topic_id': <int>,
+	  'facet_id': <str>,
+	  'initial_request': <str>,
+	  'question': <str>,
+	  'answer': <str>,
+	  'conversation_context': [{'question': <str>,
+	   'answer': <str>},
+	  {'question': <str>,
+	   'answer': <str>}],
+	  'context_id': <int>},
+	  ...
+	  }
+	  
+where
+ - `<record_id>` is an `int` indicating the ID of the current conversation record. While in the `dev` set there exists multiple `<record_id>` values per `<context_id>`, in the `test` file there would be only one. We include current questions and answers from the synthetic multi-turn data in the `synthetic_dev.pkl` file for training purposes.
+ - `'topic_id'`, `'facet_id'`, and `'initial_request'` indicate the topic, facet, and initial request of the current conversation, according to the single turn dataset.
+ - `'question'`: current clarifying question that is being posed to the user.
+ - `'answer'`: user's answer to the clarifying question.
+ - `'conversation_context'` identifies the context of the current conversation. A context consists of previous turns in a conversation. As we see, it is a list of `'question'` and `'answer'` items. This list tells us which questions have been asked in the conversation so far, and what has been the answer to them.
+ - `'context_id'` is the ID of the conversation context. Basically, participants should predict the next utternace for each `context_id`.
+ 
+ Some example records can be seen below:
+ 
+	{2287: {'topic_id': 8,
+	  'facet_id': 'F0968',
+	  'initial_request': 'I want to know about appraisals.',
+	  'question': 'are you looking for a type of appraiser',
+	  'answer': 'im looking for nearby companies that do home appraisals',
+	  'conversation_context': [],
+	  'context_id': 968},
+	 2288: {'topic_id': 8,
+	  'facet_id': 'F0969',
+	  'initial_request': 'I want to know about appraisals.',
+	  'question': 'are you looking for a type of appraiser',
+	  'answer': 'yes jewelry',
+	  'conversation_context': [],
+	  'context_id': 969},
+	 1570812: {'topic_id': 293,
+	 'facet_id': 'F0729',
+	 'initial_request': 'Tell me about the educational advantages of social networking sites.',
+	 'question': 'which social networking sites would you like information on',
+	 'answer': 'i don have a specific one in mind just overall educational benefits to social media sites',
+	 'conversation_context': [{'question': 'what level of schooling are you interested in gaining the advantages to social networking sites',
+	   'answer': 'all levels'},
+	  {'question': 'what type of educational advantages are you seeking from social networking',
+	   'answer': 'i just want to know if there are any'}],
+	 'context_id': 976573}
+	
+
+### `single_turn_train_eval.pkl` and `multi_turn_****_eval.pkl.tar.gz`:
+These files are `dict`s of pre-computed document relevance results after asking each question.  The document relevance performance is calculated as follows:
+
+* For a context, the selected question and its corresponding answer are added to the document retrieval system.
 * The document retrieval model [[1]](#ref1) , then re-ranks the documents with the given question and answer.
 * The performance of the newly-ranked document is then computed as follows. For every given facet, the effect of asking the question can be determined using the pre-computed `dict`. Below we see the structure of the `dict`:
 	
 		{ <evaluation_metric>: 
 			[ 
-			  <facet_id>: 
+			  <context_id>: 
 			  {
 		  	    <question_id> : 
 			  	 {
@@ -177,7 +232,7 @@ Q02320	| what kind of pictures are you looking for
 		}	
 	
 
-As we see, one has first to identify the `evaluation_metric` they are interested in, followed by a `facet_id` and `question_id`. Notice that here we report the retrieval performance for both with and without considering the answer to the question. Furthermore, we also include two other values, namely, `MAX` and `MIN`. These refer to the maximum and minimum performance that the retrieval model achieves by asking the "best" and "worst" questions among the candidate questions. Below we see a sample of the data:
+As we see, one has first to identify the `evaluation_metric` they are interested in, followed by a `context_id` and `question_id`. Notice that here we report the retrieval performance for both with and without considering the answer to the question. Furthermore, we also include two other values, namely, `MAX` and `MIN`. These refer to the maximum and minimum performance that the retrieval model achieves by asking the "best" and "worst" questions among the candidate questions. Below we see a sample of the data:
 
 	{ 'NDCG20: 
 		[ 
@@ -211,6 +266,8 @@ Notice that this `dict` contains the following evaluation metrics:
 * MRR@100
 
 **Note**: If a question is selected for a topic, that is not among the candidate questions (thus not appearing in `single_turn_train_eval.pkl`, the document relevance is assumed to be equal to `MIN` for the facet. 
+
+**Note**: The `context_id` in the multi-turn dictionaries is an `int`. The multi-turn `dict`s also contain single-turn dialogs. For those, the `context_id` equals the `facet_id` after removing the initial `F` and casting to `int`. On the other hand, for the single-turn `dict`, the `context_id` is actually `facet_id`.
 
 ### `top10k_docs_dict.pkl.tar.gz`
 `top10k_docs_dict.pkl.tar.gz` is a `dict` consisting of a `list` of document ID's for a given `topic_id`. In case one plans to use the contents of a document in their model, and does not have access to ClueWeb09 or ClueWeb12 data collections, this `dict` is useful for having the list of top 10,000 documents as an initial ranking. The participants can use this list for two purposes:
@@ -350,11 +407,72 @@ This file is supposed to contain the predicted `clarification_need` labels. Ther
 ## Run Submission
 Please send two files per run as described above to `clariq@convai.io`, indicating your team's name, as well as your run ID.  You'll also need to share your GitHub repository with us.
 
+## System Submission
+Each team in the second stage must submit a system that accepts the conversation in the following format, and produces output as described.
+### Input format
+	{<record_id>: {'topic_id': <int>,
+	  'facet_id': <str>,
+	  'initial_request': <str>,
+	  'conversation_context': [{'question': <str>,
+	   'answer': <str>},
+	  {'question': <str>,
+	   'answer': <str>}],
+	  'context_id': <int>},
+	  ...
+	  }
+	  
+where
+ - `<record_id>` is an `int` indicating the ID of the current conversation record. While in the `dev` set there exists multiple `<record_id>` values per `<context_id>`, in the `test` file there would be only one. We include current questions and answers from the synthetic multi-turn data in the `synthetic_dev.pkl` file for training purposes.
+ - `'topic_id'`, `'facet_id'`, and `'initial_request'` indicate the topic, facet, and initial request of the current conversation, according to the single turn dataset.
+ - `'conversation_context'` identifies the context of the current conversation. A context consists of previous turns in a conversation. As we see, it is a list of `'question'` and `'answer'` items. This list tells us which questions have been asked in the conversation so far, and what has been the answer to them. For the `train` and `dev` sets, these `str` values can be mapped to the `question_bank` question values. Here, we do not refer to questions by ID's, as the second stage aims to evaluate **machine-generated** questions as well.
+ - `'context_id'` is the ID of the conversation context. Basically, participants should predict the next utternace for each `context_id`. Therefore, even in cases of `train` and `dev` sets where multiple records exists for single `context_id`, one prediction must be provided. Some example data can be found below:
+ 
+ 		{2287: {'topic_id': 8,
+		  'facet_id': 'F0968',
+		  'initial_request': 'I want to know about appraisals.',
+		  'conversation_context': [],
+		  'context_id': 968},
+		 2288: {'topic_id': 8,
+		  'facet_id': 'F0969',
+		  'initial_request': 'I want to know about appraisals.',
+		  'conversation_context': [],
+		  'context_id': 969},
+		 1570812: {'topic_id': 293,
+		 'facet_id': 'F0729',
+		 'initial_request': 'Tell me about the educational advantages of social networking sites.',
+		 'conversation_context': [{'question': 'what level of schooling are you interested in gaining the advantages to social networking sites',
+		   'answer': 'all levels'},
+		  {'question': 'what type of educational advantages are you seeking from social networking',
+		   'answer': 'i just want to know if there are any'}],
+		 'context_id': 976573}
+
+
+### Output format
+The system output should be submitted in a single file per set (dev and test) in the following format:
+
+	<context_id> 0 “<question_text>” <ranking> <relevance_score> <run_id>
+
+Participants may submit more than one response per `context_id`, however, we only evaluate the first response in the ranked list per `context_id`.
+`<question_text>` must be quoted. Empty string (`""`) value for `<question_text>` indicates that a system asks no question for a given context (i.e., `Q00001`). This could be the case where the system predicts that no further improvement can be achieved by asking clarifying questions, or no further clarification is required. We mark empty question as the end of a conversation, and count the number of turns based on that.
+
+Notice that `<question_text>` must be an `str` of the question. As participants are allowed to select a question from the `question_bank` or **generate** clarifying questions, we only take full text strings as input. In case a question is selected from the `question_bank`, simply quote the text of the question. An example generated output can be found below:
+
+	784 0 "are you looking for reviews related to the pampered chef" 0 13 bestq_multi_turn
+	785 0 "" 0 13 bestq_multi_turn
+	813 0 "are you interested in a current map of the united states" 0 17 bestq_multi_turn
+	820 0 "are you looking for a specific type of solar panels" 0 10 bestq_multi_turn
+	841 0 "" 0 15 bestq_multi_turn
+	
+
+
 ## Sample Baseline Code
 ### BM25 Ranker
+ - **Single turn**:
 A sample Colab Notebook of a simple baseline model can be found [here](https://colab.research.google.com/drive/1g_Sc9j5fYT1hiOxif6BVH5NHNt-icxtT?usp=sharing). The baseline model ranks the questions using a BM25 ranker.
 The same baseline can also be found in the repo under `./src/clariq_baseline_bm25.ipynb`. It is a very simple baseline,
 ranking the questions simply by their BM25 relevance score compared to the `original_request`.
+ - **Multi turn**:
+A simple BM25 baseline for multi-turn question selection can be found in the repo under `./src/clariq_baseline_bm25_multi_turn.ipynb`.
 
 ### BERT-based Ranker
 We have trained a BERT-based model for the `question_relevance` task. The model fine-tunes BERT for retrieve relevant questions to a given topic. The model is tested on two different evaluation setups, i.e., question reranking and question ranking. The reranking model takes the top 30 predictions of BM25 and reranks them, while the full ranking model ranks all the questions available in the question bank. The results of the two models can be found in the [leaderboard](http://convai.io/). Special thanks to [Gustavo Penha](https://guzpenha.github.io/guzblog/), who kindly developed the models based on the [Transformer Rankers](https://guzpenha.github.io/transformer_rankers/) library, and shared the code in a [Google Colab Notebook](https://colab.research.google.com/drive/1RHHbh5KQY-QDA7kV7wyHFJ7B_w5RRHzP?usp=sharing).
