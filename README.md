@@ -4,7 +4,7 @@
 
 ## Introduction
 
-The challenge is organized as part of the Search-oriented Conversational AI (SCAI) EMNLP
+The ClariQ challenge [[3]](#ref3) is organized as part of the Search-oriented Conversational AI (SCAI) EMNLP
 workshop in 2020. The main aim of the conversational systems is to return
 an appropriate answer in response to the user requests. However, some user
 requests might be ambiguous. In Information Retrieval (IR) settings such a situation is handled mainly
@@ -480,6 +480,17 @@ We have trained a BERT-based model for the `question_relevance` task. The model 
 ## Questions
 Please contact us via `clariq@convai.io` should you have any questions, comments, or concerns regarding the challenge.
 
+## Citing
+
+	@misc{aliannejadi2020convai3,
+	    title={ConvAI3: Generating Clarifying Questions for Open-Domain Dialogue Systems (ClariQ)},
+	    author={Mohammad Aliannejadi and Julia Kiseleva and Aleksandr Chuklin and Jeff Dalton and Mikhail Burtsev},
+	    year={2020},
+	    eprint={2009.11352},
+	    archivePrefix={arXiv},
+	    primaryClass={cs.CL}
+	}
+
 ## Acknowledgments
 The challenge is organized as a joint effort by the University of Amsterdam, Microsoft, Google, University of Glasgow, and MIPT. We would like to thank Microsoft for their generous support of data annotation costs. 
 We would also like to thank the [Webis Group](https://webis.de/) for giving us access to ChatNoir search API.
@@ -490,3 +501,5 @@ Thanks to the crowd workers for their invaluable help in annotating ClariQ.
 
 - <a name="ref1">[1]</a>: "Asking Clarifying Questions in Open-Domain Information-Seeking Conversations", M. Aliannejadi, H. Zamani, F. Crestani, and W. B. Croft, International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR), Paris, France, 2019
 - <a name="ref2">[2]</a>: "Elastic ChatNoir: Search Engine for the ClueWeb and the Common Crawl", J. Bevendorff, B. Stein,  M. Hagen, Martin Potthast, Advances in Information Retrieval. 40th European Conference on IR Research (ECIR 2018), Grenoble, France
+- <a name="ref3">[3]</a>: "ConvAI3: Generating Clarifying Questions for Open-Domain Dialogue Systems (ClariQ)", M. Aliannejadi, J. Kiseleva, A. Chuklin, J. Dalton, M. Burtsev, arXiv, 2009.11352, 2020
+
