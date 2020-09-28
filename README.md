@@ -463,7 +463,14 @@ Notice that `<question_text>` must be an `str` of the question. As participants 
 	820 0 "are you looking for a specific type of solar panels" 0 10 bestq_multi_turn
 	841 0 "" 0 15 bestq_multi_turn
 	
-
+### System Configuration
+The submitted systems must produce the output in a reasonable time window (1-2 hours) on our system with the following configuration:
+ 
+ * CPU: Core i7-7700
+ * RAM: 32 Gb RAM
+ * GPU: 1080 Ti
+ 
+**Note:** All submitted systems must be accompanied with a ready-to-use Docker container.
 
 ## Sample Baseline Code
 ### BM25 Ranker
