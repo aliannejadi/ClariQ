@@ -92,6 +92,8 @@ Below we list the files in the repository:
 
 * `./data/train.tsv` and `./data/dev.tsv` are TSV files consisting of topics (queries), facets, clarifying questions, user's answers, and labels for how much clarification is needed (`clarification needs`).
 * `./data/test.tsv` is a TSV file consisting of test topic ID's, as well as queries (text).
+* `./data/test_with_labels.tsv` is a TSV file consiting of test topic ID's with the labels. It can be used with the evaluation script.
+* `./data/multi_turn_human_generated_data.tsv` is a TSV file containing the human-generated multi turn conversations which is the result of of the human-in-the-loop process.
 * `./data/question_bank.tsv` is a TSV file containing all the questions in the collection, as well as their ID's. Participants' models should select questions from this file.
 * `./data/top10k_docs_dict.pkl.tar.gz` is a `dict` containing the top 10,000 document ID's retrieved from ClueWeb09 and ClueWeb12 collections for each topic. This may be used by the participants who wish to leverage documents content in their models. 
 * `./data/single_turn_train_eval.pkl` is a `dict` containing the performance of each topic after asking a question and getting the answer. The evaluation tool that we provide uses this file to evaluate the selected questions.
