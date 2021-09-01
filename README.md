@@ -493,5 +493,5 @@ Thanks to the crowd workers for their invaluable help in annotating ClariQ.
 - <a name="ref1">[1]</a>: "Asking Clarifying Questions in Open-Domain Information-Seeking Conversations", M. Aliannejadi, H. Zamani, F. Crestani, and W. B. Croft, International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR), Paris, France, 2019
 - <a name="ref2">[2]</a>: "Elastic ChatNoir: Search Engine for the ClueWeb and the Common Crawl", J. Bevendorff, B. Stein,  M. Hagen, Martin Potthast, Advances in Information Retrieval. 40th European Conference on IR Research (ECIR 2018), Grenoble, France
 - <a name="ref3">[3]</a>: "ConvAI3: Generating Clarifying Questions for Open-Domain Dialogue Systems (ClariQ)", M. Aliannejadi, J. Kiseleva, A. Chuklin, J. Dalton, M. Burtsev, arXiv, 2009.11352, 2020
-- - <a name="ref4">[4]</a>: "Building and Evaluating Open-Domain Dialogue Corpora with Clarifying Questions", M. Aliannejadi, J. Kiseleva, A. Chuklin, J. Dalton, M. Burtsev, EMNLP 2021
+- <a name="ref4">[4]</a>: "Building and Evaluating Open-Domain Dialogue Corpora with Clarifying Questions", M. Aliannejadi, J. Kiseleva, A. Chuklin, J. Dalton, M. Burtsev, EMNLP 2021
 
