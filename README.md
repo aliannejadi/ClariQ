@@ -1,15 +1,13 @@
 # ClariQ
 
-[![Join the chat at https://gitter.im/ClariQ/community](https://badges.gitter.im/ClariQ/community.svg)](https://gitter.im/ClariQ/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 ## Introduction
 
-The ClariQ challenge [[3]](#ref3) is organized as part of the Search-oriented Conversational AI (SCAI) EMNLP
-workshop in 2020. The main aim of the conversational systems is to return
+The main aim of the conversational systems is to return
 an appropriate answer in response to the user requests. However, some user
 requests might be ambiguous. In Information Retrieval (IR) settings such a situation is handled mainly
 through the diversification of search result page. It is however much more challenging in dialogue settings. 
-Hence, we aim to study the following situation for dialogue settings:
+
+We release the ClariQ dataset [[3](#ref3), [4](#ref4)], aiming to study the following situation for dialogue settings:
 
 * a user is asking an ambiguous question (where ambiguous question is a
 question to which one can return > 1 possible answers);
@@ -22,14 +20,15 @@ the following:
 * RQ1: When to ask clarifying questions during dialogues?
 * RQ2: How to generate the clarifying questions?
 
-## Challenge Design
+## ConvAI3 Data Challenge
 
-The ClariQ challenge is run in two stages. At Stage 1 (described below)
-participants are provided a static dataset consisting mainly of an initial user
+ClariQ was collected as part of the ConvAI3 (http://convai.io) challenge which was co-organized with the SCAI workshop (https://scai-workshop.github.io/2020/).
+The challenge ran in two stages. At Stage 1 (described below)
+participants were provided with a static dataset consisting mainly of an initial user
 request, clarifying question and user answer, which is suitable for initial training,
-validating and testing. At Stage 2, we bring a human
-in the loop. Namely, the TOP-N systems, resulted from Stage 1, are exposed
-to the real users.
+validating and testing. At Stage 2, we brought a human
+in the loop. Namely, the top 3 systems, resulted from Stage 1, were invited to develop systems that were exposed
+to human annotators.
 
 ### Stage 1: initial dataset
 
@@ -74,19 +73,19 @@ We have extended the [Qulac](https://github.com/aliannejadi/qulac) [[1]](#ref1) 
 Below, we provide a short summary of the data characteristics, for the training set:
 
 ### ClariQ Train
-Feature  						| Value
+Feature  			| Value
 --------------------------------| -----
-\# train (dev) topics			| 187 (50)
-\# faceted topics 				| 141
-\# ambiguous topics 			| 57
-\# single topics				| 39
-\# facets 						| 891
+\# train (dev) topics		| 187 (50)
+\# faceted topics 		| 141
+\# ambiguous topics 		| 57
+\# single topics		| 39
+\# facets 			| 891
 \# total questions              | 3,929
 \# single-turn conversations    | 11,489
 \# multi-turn conversations     | ~ 1 million 
 \# documents                    | ~ 2 million
 
-Below, we provide a brief overview of the structure of the data, as well as a guideline on how to submit the runs.
+Below, we provide a brief overview of the structure of the data.
 
 ## Files
 Below we list the files in the repository:
@@ -373,7 +372,7 @@ Would produce the output below:
 
 
 ## Run file format
-Each run consists of two separate files: 
+To evaluate a run using the evaluation script, each file should be formatted as follows. The following files can be evaluated using the script:
 
 * Ranked list of questions for each topic;
 * Predicted `clarification_need` label for each topic. 
@@ -404,10 +403,7 @@ This file is supposed to contain the predicted `clarification_need` labels. Ther
     170 3
     182 4
 
-## Run Submission
-Please send two files per run as described above to `clariq@convai.io`, indicating your team's name, as well as your run ID.  You'll also need to share your GitHub repository with us.
-
-## System Submission
+## Multi-turn Input/Output
 Each team in the second stage must submit a system that accepts the conversation in the following format, and produces output as described.
 ### Input format
 	{<record_id>: {'topic_id': <int>,
@@ -463,16 +459,8 @@ Notice that `<question_text>` must be an `str` of the question. As participants 
 	820 0 "are you looking for a specific type of solar panels" 0 10 bestq_multi_turn
 	841 0 "" 0 15 bestq_multi_turn
 	
-### System Configuration
-The submitted systems must produce the output in a reasonable time window (1-2 hours) on our system with the following configuration:
- 
- * CPU: Core i7-7700
- * RAM: 32 Gb RAM
- * GPU: 1080 Ti
- 
-**Note:** All submitted systems must be accompanied with a ready-to-use Docker container.
 
-## Sample Baseline Code
+## Baselines
 ### BM25 Ranker
  - **Single turn**:
 A sample Colab Notebook of a simple baseline model can be found [here](https://colab.research.google.com/drive/1g_Sc9j5fYT1hiOxif6BVH5NHNt-icxtT?usp=sharing). The baseline model ranks the questions using a BM25 ranker.
@@ -484,18 +472,14 @@ A simple BM25 baseline for multi-turn question selection can be found in the rep
 ### BERT-based Ranker
 We have trained a BERT-based model for the `question_relevance` task. The model fine-tunes BERT for retrieve relevant questions to a given topic. The model is tested on two different evaluation setups, i.e., question reranking and question ranking. The reranking model takes the top 30 predictions of BM25 and reranks them, while the full ranking model ranks all the questions available in the question bank. The results of the two models can be found in the [leaderboard](http://convai.io/). Special thanks to [Gustavo Penha](https://guzpenha.github.io/guzblog/), who kindly developed the models based on the [Transformer Rankers](https://guzpenha.github.io/transformer_rankers/) library, and shared the code in a [Google Colab Notebook](https://colab.research.google.com/drive/1RHHbh5KQY-QDA7kV7wyHFJ7B_w5RRHzP?usp=sharing).
 
-## Questions
-Please contact us via `clariq@convai.io` should you have any questions, comments, or concerns regarding the challenge.
 
 ## Citing
 
-	@misc{aliannejadi2020convai3,
-	    title={ConvAI3: Generating Clarifying Questions for Open-Domain Dialogue Systems (ClariQ)},
+	@inproceedings{aliannejadi2021building,
+	    title={Building and Evaluating Open-Domain Dialogue Corpora with Clarifying Questions},
 	    author={Mohammad Aliannejadi and Julia Kiseleva and Aleksandr Chuklin and Jeff Dalton and Mikhail Burtsev},
-	    year={2020},
-	    eprint={2009.11352},
-	    archivePrefix={arXiv},
-	    primaryClass={cs.CL}
+	    year={2021},
+	    booktitle={{EMNLP}}	 
 	}
 
 ## Acknowledgments
@@ -509,4 +493,5 @@ Thanks to the crowd workers for their invaluable help in annotating ClariQ.
 - <a name="ref1">[1]</a>: "Asking Clarifying Questions in Open-Domain Information-Seeking Conversations", M. Aliannejadi, H. Zamani, F. Crestani, and W. B. Croft, International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR), Paris, France, 2019
 - <a name="ref2">[2]</a>: "Elastic ChatNoir: Search Engine for the ClueWeb and the Common Crawl", J. Bevendorff, B. Stein,  M. Hagen, Martin Potthast, Advances in Information Retrieval. 40th European Conference on IR Research (ECIR 2018), Grenoble, France
 - <a name="ref3">[3]</a>: "ConvAI3: Generating Clarifying Questions for Open-Domain Dialogue Systems (ClariQ)", M. Aliannejadi, J. Kiseleva, A. Chuklin, J. Dalton, M. Burtsev, arXiv, 2009.11352, 2020
+- - <a name="ref4">[4]</a>: "Building and Evaluating Open-Domain Dialogue Corpora with Clarifying Questions", M. Aliannejadi, J. Kiseleva, A. Chuklin, J. Dalton, M. Burtsev, EMNLP 2021
 
