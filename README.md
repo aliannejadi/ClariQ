@@ -37,7 +37,7 @@ Taking inspiration from [Qulac](https://github.com/aliannejadi/qulac) [[1]](#ref
 Namely, the collected dataset consists of:
 
 * **User Request:** an initial user request in the conversational form, e.g.,
-"What is Fickle Creek Farm?", with a label reflects if clarification is needed
+"What is Fickle Creek Farm?", with a label reflects if is needed
 ranged from 1 to 4;
 * **Clarification questions:** a set of possible clarifying questions, e.g., "Do
 you want to know the location of fickle creek farm?";
@@ -113,7 +113,7 @@ In the `train.tsv` and `dev.tsv` files, you will find these fields:
 * `topic_id`: the ID of the topic (`initial_request`).
 * `initial_request`: the query (text) that initiates the conversation.
 * `topic_desc`: a full description of the topic as it appears in the TREC Web Track data.
-* `clarification_need`: a label from 1 to 4, indicating how much it is needed to clarify a topic. If an `initial_request` is self-contained and would not need any clarification, the label would be 1. While if a `initial_request` is absolutely ambiguous, making it impossible for a search engine to guess the user's right intent before clarification, the label would be 4.
+* `clarification_need`: a label from 1 to 4, indicating how much it is needed to clarify a topic. If an `initial_request` is self-contained and would not need any clarification, the label would be 1. While if a `initial_request` is absolutely ambiguous, making it impossible for a search engine to guess the user's right intent before clarification, the label would be 4. Labels 2 and 3 represent other levels of clarification need, where clarification is still needed but not as much as label 4.
 * `facet_id`: the ID of the facet.
 * `facet_desc`: a full description of the facet (information need) as it appears in the TREC Web Track data.
 * `question_id`: the ID of the question as it appears in `question_bank.tsv`.
