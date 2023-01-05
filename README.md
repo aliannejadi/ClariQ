@@ -38,7 +38,7 @@ Namely, the collected dataset consists of:
 
 * **User Request:** an initial user request in the conversational form, e.g.,
 "What is Fickle Creek Farm?", with a label reflects if is needed
-ranged from 1 to 4;
+ranged from 1 to 4. If an initial user request is self-contained and would not need any clarification, the label would be 1. While if a initial user request is absolutely ambiguous, making it impossible for a search engine to guess the user's right intent before clarification, the label would be 4. Labels 2 and 3 represent other levels of clarification need, where clarification is still needed but not as much as label 4;
 * **Clarification questions:** a set of possible clarifying questions, e.g., "Do
 you want to know the location of fickle creek farm?";
 * **User Answers:** each questions is supplied with a user answer, e.g., "No, I
@@ -52,7 +52,7 @@ Therefore to answer our research questions, we suggest the following
 two tasks:
 
 * To answer RQ1: Given a user request, return a score [1 −4] indicating the
-necessity of asking clarifying questions.
+necessity of asking clarifying questions. 
 * To answer RQ2: Given a user request which needs clarification, return the
 most suitable clarifying question. Here participants are able to choose: (1)
 either select the clarifying question from the provided question bank (all
